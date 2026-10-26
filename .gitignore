@@ -1,0 +1,53 @@
+# ========================================
+# Carp
+# ========================================
+
+# Carp build output
+/out/
+
+# Generated test output
+*.output.actual
+
+# Compiler artifacts
+*.o
+*.obj
+*.dSYM/
+
+# Profiling and generated tags
+*.prof
+flamegraph.svg
+tags
+
+
+# ========================================
+# Emacs
+# ========================================
+
+# Backup files
+*~
+
+# Auto-save files
+\#*\#
+auto-save-list/
+
+# Lock files
+.\#*
+
+# Byte-compiled and native-compiled Emacs Lisp
+*.elc
+*.eln
+/eln-cache/
+
+# Emacs desktop session
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# Network security state
+/network-security.data
+
+# Org mode generated state
+/org-id-locations
+
+# Flymake / Flycheck generated files
+*_flymake.*
+flycheck_*.el
