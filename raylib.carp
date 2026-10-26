@@ -1,0 +1,2 @@
+(system-include "raylib.h")
+(posix-only (add-lib "-lraylib"))
