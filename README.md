@@ -9,5 +9,9 @@
   - [ ] raymath.h
 * `prn` warning: I don't know how to fix it.
 * Fixed-length array is defined to `(Ptr t)` with length comment.
-* `typedef A *B;`: No type alias in Carp. `(typedef A (Ptr B))` doesn't work. Following type is not available now. Use the right side instead:
+* `typedef A *B;`: No type alias support in Carp. `(typedef A (Ptr B))` doesn't work, for example. Following type is not available now. Use the right side instead:
+  - `Quaternion`: `Vector4`
+  - `Texture2D`: `Texture`
+  - `TextureCubemap`: `Texture`
+  - `Camera`: `Camera3D`
   - `ModelAnimPose`: `(Ptr Transform)`
