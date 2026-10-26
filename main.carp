@@ -41,31 +41,31 @@
 (register-type Vector2 [x Float, y Float])
 (register-type Vector3 [x Float, y Float, z Float])
 (register-type Vector4 [x Float, y Float, z Float, w Float])
-(deftype Quaternion Vector4)
+;; (deftype Quaternion Vector4) ; TODO: define Quaternion = Vector4
 (register-type Matrix [m0 Float, m4 Float, m8 Float, m12 Float, m1 Float, m5 Float, m9 Float, m13 Float, m2 Float, m6 Float, m10 Float, m14 Float, m3 Float, m7 Float, m11 Float, m15 Float])
 (register-type Color [r Byte, g Byte, b Byte, a Byte])
 (register-type Rectangle [x Float, y Float, width Float, height Float])
 (register-type Image [data (Ptr ()), width Int32, height Int32, mipmaps Int32, format Int32])
 (register-type Texture [id Uint32, width Int32, height Int32, mipmaps Int32, format Int32])
-(deftype Texture2D Texture)
-(deftype TextureCubemap Texture)
+;; (deftype Texture2D Texture) ; TODO: define Texture2D = Texture
+;; (deftype TextureCubemap Texture) ; TODO: define TextureCubemap = Texture
 (register-type RenderTexture [id Uint32, texture Texture, depth Texture])
-(def RenderTexture2D RenderTexture)
+;; (def RenderTexture2D RenderTexture) ; TODO: define RenderTexture2D = RenderTexture
 (register-type NPatchInfo [source Rectangle, left Int32, top Int32, right Int32, bottom Int32, layout Int32])
 (register-type GlyphInfo [value Int32, offsetX Int32, offsetY Int32, advanceX Int32, image Image])
-(register-type Font [baseSize Int32, glyphCount Int32, glyphPadding Int32, texture Texture2D, recs (Ptr Rectangle), glyphs (Ptr GlyphInfo)])
+(register-type Font [baseSize Int32, glyphCount Int32, glyphPadding Int32, texture Texture, recs (Ptr Rectangle), glyphs (Ptr GlyphInfo)]) ; texture: Texture2D
 (register-type Camera3D [position Vector3, target Vector3, up Vector3, fovy Float, projection Int32])
-(deftype Camera Camera3D)
-(register-type Camera2D [offset Vector2, rotation Float, zoom Float])
+;; (deftype Camera Camera3D) ; TODO: define Camera = Camera3D
+(register-type Camera2D [offset Vector2, target Vector2, rotation Float, zoom Float])
 (register-type Mesh [vertexCount Int32, triangleCount Int32, vertices (Ptr Float), texcoords (Ptr Float), texcoords2 (Ptr Float), normals (Ptr Float), tangents (Ptr Float), colors (Ptr Byte), indices (Ptr Uint16), boneCount Int32, boneIndices (Ptr Byte), boneWeights (Ptr Float), animVertices (Ptr Float), animNormals (Ptr Float), vaoId Uint32, vboId (Ptr Uint32)])
 (register-type Shader [id Uint32, locs (Ptr Int32)])
-(register-type MaterialMap [texture Texture2D, color Color, value Float])
+(register-type MaterialMap [texture Texture, color Color, value Float]) ; texture: Texture2D
 (register-type Material [shader Shader, maps (Ptr MaterialMap), params (Ptr Float)]) ; params: float[4]
-(register-type Transform [translation Vector3, rotation Quaternion, scale Vector3])
-;; (deftype ModelAnimPose (Ptr Transform)) ; TODO: define ModelAnimPose = Transform* ... in future.
+(register-type Transform [translation Vector3, rotation Vector4, scale Vector3]) ; rotation: Quaternion
+;; (deftype ModelAnimPose (Ptr Transform)) ; TODO: define ModelAnimPose = Transform*
 (register-type BoneInfo [name (Ptr Byte), parent Int32]) ; name: char[32]
 (register-type ModelSkeleton [boneCount Uint32, bones (Ptr BoneInfo), bindPose (Ptr Transform)]) ; bindPose: ModelAnimPose
-(register-type Model [meshCount Int32, materialCount Int32, meshes (Ptr Mesh), materials (Ptr Material), meshMaterial (Ptr Int32), skeleton ModelSkeleton, currentPose (Ptr Transform), boneMatrices (Ptr Matrix)]) ; currentPose: ModelAnimPose
+(register-type Model [transform Matrix, meshCount Int32, materialCount Int32, meshes (Ptr Mesh), materials (Ptr Material), meshMaterial (Ptr Int32), skeleton ModelSkeleton, currentPose (Ptr Transform), boneMatrices (Ptr Matrix)]) ; currentPose: ModelAnimPose
 (register-type ModelAnimation [name (Ptr Byte), boneCount Uint32, keyframeCount Int32, keyframePoses (Ptr Transform)]) ; name:  char[32], keyframePoses: ModelAnimPose
 (register-type Ray [position Vector3, direction Vector3])
 (register-type RayCollision [hit Bool, distance Float, point Vector3, normal Vector3])
@@ -492,12 +492,13 @@
   (register npatch-three-patch-vertical NPatchLayout "NPATCH_THREE_PATCH_VERTICAL")
   (register npatch-three-patch-horizontal NPatchLayout "NPATCH_THREE_PATCH_HORIZONTAL"))
 
-;; TODO: Define Signature?
+;; TODO: Define Signature of function pointers
 (register-type TraceLogCallback)
 (register-type LoadFileDataCallback)
 (register-type SaveFileDataCallback)
 (register-type LoadFileTextCallback)
 (register-type SaveFileTextCallback)
+(register-type AudioCallback)
 
 (register init-window (λ [Int Int (Ptr CChar)] ()) "InitWindow")
 (register close-window (λ [] ()) "CloseWindow")
@@ -556,7 +557,7 @@
 (register end-mode2-d (λ [] ()) "EndMode2D")
 (register begin-mode3-d (λ [Camera3D] ()) "BeginMode3D")
 (register end-mode3-d (λ [] ()) "EndMode3D")
-(register begin-texture-mode (λ [RenderTexture2D] ()) "BeginTextureMode")
+(register begin-texture-mode (λ [RenderTexture] ()) "BeginTextureMode") ; [RenderTexture2D]
 (register end-texture-mode (λ [] ()) "EndTextureMode")
 (register begin-shader-mode (λ [Shader] ()) "BeginShaderMode")
 (register end-shader-mode (λ [] ()) "EndShaderMode")
@@ -576,15 +577,15 @@
 (register set-shader-value (λ [Shader Int (Ptr Unit) Int] ()) "SetShaderValue")
 (register set-shader-value-v (λ [Shader Int (Ptr Unit) Int Int] ()) "SetShaderValueV")
 (register set-shader-value-matrix (λ [Shader Int Matrix] ()) "SetShaderValueMatrix")
-(register set-shader-value-texture (λ [Shader Int Texture2D] ()) "SetShaderValueTexture")
+(register set-shader-value-texture (λ [Shader Int Texture] ()) "SetShaderValueTexture") ; [Shader Int Texture2D]
 (register unload-shader (λ [Shader] ()) "UnloadShader")
-(register get-screen-to-world-ray (λ [Vector2 Camera] Ray) "GetScreenToWorldRay")
-(register get-screen-to-world-ray-ex (λ [Vector2 Camera Int Int] Ray) "GetScreenToWorldRayEx")
-(register get-world-to-screen (λ [Vector3 Camera] Vector2) "GetWorldToScreen")
-(register get-world-to-screen-ex (λ [Vector3 Camera Int Int] Vector2) "GetWorldToScreenEx")
+(register get-screen-to-world-ray (λ [Vector2 Camera3D] Ray) "GetScreenToWorldRay") ; [Vector2 Camera] Ray
+(register get-screen-to-world-ray-ex (λ [Vector2 Camera3D Int Int] Ray) "GetScreenToWorldRayEx") ; [Vector2 Camera Int Int] Ray
+(register get-world-to-screen (λ [Vector3 Camera3D] Vector2) "GetWorldToScreen") ; [Vector3 Camera] Vector2
+(register get-world-to-screen-ex (λ [Vector3 Camera3D Int Int] Vector2) "GetWorldToScreenEx") ; [Vector3 Camera Int Int] Vector2
 (register get-world-to-screen2-d (λ [Vector2 Camera2D] Vector2) "GetWorldToScreen2D")
 (register get-screen-to-world2-d (λ [Vector2 Camera2D] Vector2) "GetScreenToWorld2D")
-(register get-camera-matrix (λ [Camera] Matrix) "GetCameraMatrix")
+(register get-camera-matrix (λ [Camera3D] Matrix) "GetCameraMatrix") ; [Camera] Matrix
 (register get-camera-matrix2-d (λ [Camera2D] Matrix) "GetCameraMatrix2D")
 (register set-target-f-p-s (λ [Int] ()) "SetTargetFPS")
 (register get-frame-time (λ [] Float) "GetFrameTime")
@@ -682,10 +683,10 @@
 (register get-gesture-drag-angle (λ [] Float) "GetGestureDragAngle")
 (register get-gesture-pinch-vector (λ [] Vector2) "GetGesturePinchVector")
 (register get-gesture-pinch-angle (λ [] Float) "GetGesturePinchAngle")
-(register update-camera (λ [(Ptr Camera) Int] ()) "UpdateCamera")
-(register update-camera-pro (λ [(Ptr Camera) Vector3 Vector3 Float] ()) "UpdateCameraPro")
-(register set-shapes-texture (λ [Texture2D Rectangle] ()) "SetShapesTexture")
-(register get-shapes-texture (λ [] Texture2D) "GetShapesTexture")
+(register update-camera (λ [(Ptr Camera3D) Int] ()) "UpdateCamera") ; [(Ptr Camera) Int]
+(register update-camera-pro (λ [(Ptr Camera3D) Vector3 Vector3 Float] ()) "UpdateCameraPro") ; [(Ptr Camera) Vector3 Vector3 Float]
+(register set-shapes-texture (λ [Texture Rectangle] ()) "SetShapesTexture") ; [Texture2D Rectangle]
+(register get-shapes-texture (λ [] Texture) "GetShapesTexture") ; [] Texture2D
 (register get-shapes-texture-rectangle (λ [] Rectangle) "GetShapesTextureRectangle")
 (register draw-pixel (λ [Int Int Color] ()) "DrawPixel")
 (register draw-pixel-v (λ [Vector2 Color] ()) "DrawPixelV")
@@ -762,7 +763,7 @@
 (register load-image (λ [(Ptr CChar)] Image) "LoadImage")
 (register load-image-raw (λ [(Ptr CChar) Int Int Int Int] Image) "LoadImageRaw")
 (register load-image-anim (λ [(Ptr CChar) (Ptr Int)] Image) "LoadImageAnim")
-(register load-image-from-texture (λ [Texture2D] Image) "LoadImageFromTexture")
+(register load-image-from-texture (λ [Texture] Image) "LoadImageFromTexture") ; [Texture2D]
 (register load-image-from-screen (λ [] Image) "LoadImageFromScreen")
 (register is-image-valid (λ [Image] Bool) "IsImageValid")
 (register unload-image (λ [Image] ()) "UnloadImage")
@@ -844,26 +845,26 @@
 (register image-draw-text (λ [(Ptr Image) (Ptr CChar) Int Int Int Color] ()) "ImageDrawText")
 (register image-draw-text-ex (λ [(Ptr Image) Font (Ptr CChar) Vector2 Float Float Color] ()) "ImageDrawTextEx")
 (register image-draw-text-pro (λ [(Ptr Image) Font (Ptr CChar) Vector2 Vector2 Float Float Float Color] ()) "ImageDrawTextPro")
-(register load-texture (λ [(Ptr CChar)] Texture2D) "LoadTexture")
-(register load-texture-from-image (λ [Image] Texture2D) "LoadTextureFromImage")
-(register load-texture-cubemap (λ [Image Int] TextureCubemap) "LoadTextureCubemap")
-(register load-render-texture (λ [Int Int] RenderTexture2D) "LoadRenderTexture")
-(register load-render-texture-ex (λ [Int Int Int] RenderTexture2D) "LoadRenderTextureEx")
-(register is-texture-valid (λ [Texture2D] Bool) "IsTextureValid")
-(register unload-texture (λ [Texture2D] ()) "UnloadTexture")
-(register is-render-texture-valid (λ [RenderTexture2D] Bool) "IsRenderTextureValid")
-(register unload-render-texture (λ [RenderTexture2D] ()) "UnloadRenderTexture")
-(register update-texture (λ [Texture2D (Ptr Unit)] ()) "UpdateTexture")
-(register update-texture-rec (λ [Texture2D Rectangle (Ptr Unit)] ()) "UpdateTextureRec")
-(register gen-texture-mipmaps (λ [(Ptr Texture2D)] ()) "GenTextureMipmaps")
-(register set-texture-filter (λ [Texture2D Int] ()) "SetTextureFilter")
-(register set-texture-wrap (λ [Texture2D Int] ()) "SetTextureWrap")
-(register draw-texture (λ [Texture2D Int Int Color] ()) "DrawTexture")
-(register draw-texture-v (λ [Texture2D Vector2 Color] ()) "DrawTextureV")
-(register draw-texture-ex (λ [Texture2D Vector2 Float Float Color] ()) "DrawTextureEx")
-(register draw-texture-rec (λ [Texture2D Rectangle Vector2 Color] ()) "DrawTextureRec")
-(register draw-texture-pro (λ [Texture2D Rectangle Rectangle Vector2 Float Color] ()) "DrawTexturePro")
-(register draw-texture-n-patch (λ [Texture2D NPatchInfo Rectangle Vector2 Float Color] ()) "DrawTextureNPatch")
+(register load-texture (λ [(Ptr CChar)] Texture) "LoadTexture") ; [(Ptr CChar)] Texture2D
+(register load-texture-from-image (λ [Image] Texture) "LoadTextureFromImage") ; [Image] Texture2D
+(register load-texture-cubemap (λ [Image Int] Texture) "LoadTextureCubemap") ; [Image Int] TextureCubemap
+(register load-render-texture (λ [Int Int] RenderTexture) "LoadRenderTexture") ; [Int Int] RenderTexture2D
+(register load-render-texture-ex (λ [Int Int Int] RenderTexture) "LoadRenderTextureEx") ; [Int Int Int] RenderTexture2D
+(register is-texture-valid (λ [Texture] Bool) "IsTextureValid") ; [Texture2D]
+(register unload-texture (λ [Texture] ()) "UnloadTexture") ; [Texture2D]
+(register is-render-texture-valid (λ [RenderTexture] Bool) "IsRenderTextureValid") ; [RenderTexture2D]
+(register unload-render-texture (λ [RenderTexture] ()) "UnloadRenderTexture") ; [RenderTexture2D]
+(register update-texture (λ [Texture (Ptr Unit)] ()) "UpdateTexture") ; [Texture2D (Ptr Unit)]
+(register update-texture-rec (λ [Texture Rectangle (Ptr Unit)] ()) "UpdateTextureRec") ; [Texture2D Rectangle (Ptr Unit)]
+(register gen-texture-mipmaps (λ [(Ptr Texture)] ()) "GenTextureMipmaps") ; [(Ptr Texture2D)]
+(register set-texture-filter (λ [Texture Int] ()) "SetTextureFilter") ; [Texture2D Int]
+(register set-texture-wrap (λ [Texture Int] ()) "SetTextureWrap") ; [Texture2D Int]
+(register draw-texture (λ [Texture Int Int Color] ()) "DrawTexture") ; [Texture2D Int Int Color]
+(register draw-texture-v (λ [Texture Vector2 Color] ()) "DrawTextureV") ; [Texture2D Vector2 Color]
+(register draw-texture-ex (λ [Texture Vector2 Float Float Color] ()) "DrawTextureEx") ; [Texture2D Vector2 Float Float Color]
+(register draw-texture-rec (λ [Texture Rectangle Vector2 Color] ()) "DrawTextureRec") ; [Texture2D Rectangle Vector2 Color]
+(register draw-texture-pro (λ [Texture Rectangle Rectangle Vector2 Float Color] ()) "DrawTexturePro") ; [Texture2D Rectangle Rectangle Vector2 Float Color]
+(register draw-texture-n-patch (λ [Texture NPatchInfo Rectangle Vector2 Float Color] ()) "DrawTextureNPatch") ; [Texture2D NPatchInfo Rectangle Vector2 Float Color]
 (register color-is-equal (λ [Color Color] Bool) "ColorIsEqual")
 (register fade (λ [Color Float] Color) "Fade")
 (register color-to-int (λ [Color] Int) "ColorToInt")
@@ -957,9 +958,9 @@
 (register draw-model-wires (λ [Model Vector3 Float Color] ()) "DrawModelWires")
 (register draw-model-wires-ex (λ [Model Vector3 Vector3 Float Vector3 Color] ()) "DrawModelWiresEx")
 (register draw-bounding-box (λ [BoundingBox Color] ()) "DrawBoundingBox")
-(register draw-billboard (λ [Camera Texture2D Vector3 Float Color] ()) "DrawBillboard")
-(register draw-billboard-rec (λ [Camera Texture2D Rectangle Vector3 Vector2 Color] ()) "DrawBillboardRec")
-(register draw-billboard-pro (λ [Camera Texture2D Rectangle Vector3 Vector3 Vector2 Vector2 Float Color] ()) "DrawBillboardPro")
+(register draw-billboard (λ [Camera3D Texture Vector3 Float Color] ()) "DrawBillboard") ; [Camera Texture2D Vector3 Float Color]
+(register draw-billboard-rec (λ [Camera3D Texture Rectangle Vector3 Vector2 Color] ()) "DrawBillboardRec") ; [Camera Texture2D Rectangle Vector3 Vector2 Color]
+(register draw-billboard-pro (λ [Camera3D Texture Rectangle Vector3 Vector3 Vector2 Vector2 Float Color] ()) "DrawBillboardPro") ; [Camera Texture2D Rectangle Vector3 Vector3 Vector2 Vector2 Float Color]
 (register upload-mesh (λ [(Ptr Mesh) Bool] ()) "UploadMesh")
 (register update-mesh-buffer (λ [Mesh Int (Ptr Unit) Int Int] ()) "UpdateMeshBuffer")
 (register unload-mesh (λ [Mesh] ()) "UnloadMesh")
@@ -984,7 +985,7 @@
 (register load-material-default (λ [] Material) "LoadMaterialDefault")
 (register is-material-valid (λ [Material] Bool) "IsMaterialValid")
 (register unload-material (λ [Material] ()) "UnloadMaterial")
-(register set-material-texture (λ [(Ptr Material) Int Texture2D] ()) "SetMaterialTexture")
+(register set-material-texture (λ [(Ptr Material) Int Texture] ()) "SetMaterialTexture") ; [(Ptr Material) Int Texture2D]
 (register set-model-mesh-material (λ [(Ptr Model) Int Int] ()) "SetModelMeshMaterial")
 (register load-model-animations (λ [(Ptr CChar) (Ptr Int)] (Ptr ModelAnimation)) "LoadModelAnimations")
 (register update-model-animation (λ [Model ModelAnimation Float] ()) "UpdateModelAnimation")
