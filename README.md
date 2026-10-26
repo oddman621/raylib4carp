@@ -8,6 +8,7 @@
   - [ ] rlgl.h
   - [ ] raymath.h
 * `prn` warning: I don't know how to fix it.
+* `CChar`: I don't know what is this.
 * Fixed-length array is defined to `(Ptr t)` with length comment.
 * `typedef A *B;`: No type alias support in Carp. `(typedef A (Ptr B))` doesn't work, for example. Following type is not available now. Use the right side instead:
   - `Quaternion`: `Vector4`
