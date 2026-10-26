@@ -15,3 +15,15 @@
   - `TextureCubemap`: `Texture`
   - `Camera`: `Camera3D`
   - `ModelAnimPose`: `(Ptr Transform)`
+* Missing functions identified so far:
+  - [ ] IsWindowState
+  - [ ] SetWindowState
+  - [ ] ClearWindowState
+  - [ ] GetMonitorName
+  - [ ] GetClipboardText
+  - [ ] SetRandomSeed
+  - [ ] LoadRandomSequence
+  - [ ] LoadFileData
+  - [ ] UnloadFileData
+  - [ ] ExportDataAsCode
+  - [ ] UnloadFileText
