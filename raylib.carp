@@ -66,13 +66,16 @@
 (register-type Mesh [vertexCount Int32, triangleCount Int32, vertices (Ptr Float), texcoords (Ptr Float), texcoords2 (Ptr Float), normals (Ptr Float), tangents (Ptr Float), colors (Ptr Byte), indices (Ptr Uint16), boneCount Int32, boneIndices (Ptr Byte), boneWeights (Ptr Float), animVertices (Ptr Float), animNormals (Ptr Float), vaoId Uint32, vboId (Ptr Uint32)])
 (register-type Shader [id Uint32, locs (Ptr Int32)])
 (register-type MaterialMap [texture Texture, color Color, value Float]) ; texture: Texture2D
-(register-type Material [shader Shader, maps (Ptr MaterialMap), params (Ptr Float)]) ; params: float[4]
+;(register-type Material [shader Shader, maps (Ptr MaterialMap), params (Ptr Float)]) ; params: float[4]
+(register-type Material "Material")
 (register-type Transform [translation Vector3, rotation Vector4, scale Vector3]) ; rotation: Quaternion
 ;; (deftype ModelAnimPose (Ptr Transform)) ; TODO: define ModelAnimPose = Transform*
-(register-type BoneInfo [name (Ptr Byte), parent Int32]) ; name: char[32]
+;; (register-type BoneInfo [name (Ptr Byte), parent Int32]) ; name: char[32]
+(register-type BoneInfo "BoneInfo")
 (register-type ModelSkeleton [boneCount Uint32, bones (Ptr BoneInfo), bindPose (Ptr Transform)]) ; bindPose: ModelAnimPose
 (register-type Model [transform Matrix, meshCount Int32, materialCount Int32, meshes (Ptr Mesh), materials (Ptr Material), meshMaterial (Ptr Int32), skeleton ModelSkeleton, currentPose (Ptr Transform), boneMatrices (Ptr Matrix)]) ; currentPose: ModelAnimPose
-(register-type ModelAnimation [name (Ptr Byte), boneCount Uint32, keyframeCount Int32, keyframePoses (Ptr (Ptr Transform))]) ; name:  char[32], keyframePoses: ModelAnimPose*
+;; (register-type ModelAnimation [name (Ptr Byte), boneCount Uint32, keyframeCount Int32, keyframePoses (Ptr (Ptr Transform))]) ; name:  char[32], keyframePoses: ModelAnimPose*
+(register-type ModelAnimation "ModelAnimation")
 (register-type Ray [position Vector3, direction Vector3])
 (register-type RayCollision [hit Bool, distance Float, point Vector3, normal Vector3])
 (register-type BoundingBox [min Vector3, max Vector3])
@@ -82,10 +85,14 @@
 (register-type AudioStream [buffer (Ptr RAudioBuffer), processor (Ptr RAudioProcessor), sampleRate Uint32, sampleSize Uint32, channels Uint32])
 (register-type Sound [stream AudioStream, frameCount Uint32])
 (register-type Music [stream AudioStream, frameCount Uint32, looping Bool, ctxType Int32, ctxData (Ptr ())])
-(register-type VrDeviceInfo [hResolution Int32, vResolution Int32, hScreenSize Float, vScreenSize Float, eyeToScreenDistance Float, lensSeparationDistance Float, interpupillaryDistance Float, lensDistortionValues (Ptr Float), chromaAbCorrection (Ptr Float)]) ; lensDistortionValues: float[4], chromaAbCorrection: float[4]
-(register-type VrStereoConfig [projection (Ptr Matrix), viewOffset (Ptr Matrix), leftLensCenter (Ptr Float), rightLensCenter (Ptr Float), leftScreenCenter (Ptr Float), rightScreenCenter (Ptr Float), scale (Ptr Float), scaleIn (Ptr Float)]) ; projection: Matrix[2], viewOffset: Matrix[2], leftLensCenter: float[2], rightLensCenter: float[2], leftScreenCenter: float[2], rightScreenCenter: float[2], scale: float[2], scaleIn: float[2]
-(register-type FilePathList [count Uint32, paths (Ptr (Ptr Char))])
-(register-type AutomationEvent [frame Uint32, type Uint32, params (Ptr Int32)]) ; params: int[4]
+;; (register-type VrDeviceInfo [hResolution Int32, vResolution Int32, hScreenSize Float, vScreenSize Float, eyeToScreenDistance Float, lensSeparationDistance Float, interpupillaryDistance Float, lensDistortionValues (Ptr Float), chromaAbCorrection (Ptr Float)]) ; lensDistortionValues: float[4], chromaAbCorrection: float[4]
+(register-type VrDeviceInfo "VrDeviceInfo")
+;;(register-type VrStereoConfig [projection (Ptr Matrix), viewOffset (Ptr Matrix), leftLensCenter (Ptr Float), rightLensCenter (Ptr Float), leftScreenCenter (Ptr Float), rightScreenCenter (Ptr Float), scale (Ptr Float), scaleIn (Ptr Float)]) ; projection: Matrix[2], viewOffset: Matrix[2], leftLensCenter: float[2], rightLensCenter: float[2], leftScreenCenter: float[2], rightScreenCenter: float[2], scale: float[2], scaleIn: float[2]
+(register-type VrStereoConfig "VrStereoConfig")
+(register-type _CChar "char")
+(register-type FilePathList [count Uint32, paths (Ptr (Ptr _CChar))])
+;; (register-type AutomationEvent [frame Uint32, type Uint32, params (Ptr Int32)]) ; params: int[4]
+(register-type AutomationEvent "AutomationEvent")
 (register-type AutomationEventList [capacity Uint32, count Uint32, events (Ptr AutomationEvent)])
 
 ;; (def LIGHTGRAY (Color.init 200b 200b 200b 255b))
@@ -586,10 +593,10 @@
 (register clear-background (λ [Color] ()) "ClearBackground")
 (register begin-drawing (λ [] ()) "BeginDrawing")
 (register end-drawing (λ [] ()) "EndDrawing")
-(register begin-mode2-d (λ [Camera2D] ()) "BeginMode2D")
-(register end-mode2-d (λ [] ()) "EndMode2D")
-(register begin-mode3-d (λ [Camera3D] ()) "BeginMode3D")
-(register end-mode3-d (λ [] ()) "EndMode3D")
+(register begin-mode-2d (λ [Camera2D] ()) "BeginMode2D")
+(register end-mode-2d (λ [] ()) "EndMode2D")
+(register begin-mode-3d (λ [Camera3D] ()) "BeginMode3D")
+(register end-mode-3d (λ [] ()) "EndMode3D")
 (register begin-texture-mode (λ [RenderTexture] ()) "BeginTextureMode") ; [RenderTexture2D]
 (register end-texture-mode (λ [] ()) "EndTextureMode")
 (register begin-shader-mode (λ [Shader] ()) "BeginShaderMode")
@@ -616,21 +623,21 @@
 (register get-screen-to-world-ray-ex (λ [Vector2 Camera3D Int Int] Ray) "GetScreenToWorldRayEx") ; [Vector2 Camera Int Int] Ray
 (register get-world-to-screen (λ [Vector3 Camera3D] Vector2) "GetWorldToScreen") ; [Vector3 Camera] Vector2
 (register get-world-to-screen-ex (λ [Vector3 Camera3D Int Int] Vector2) "GetWorldToScreenEx") ; [Vector3 Camera Int Int] Vector2
-(register get-world-to-screen2-d (λ [Vector2 Camera2D] Vector2) "GetWorldToScreen2D")
-(register get-screen-to-world2-d (λ [Vector2 Camera2D] Vector2) "GetScreenToWorld2D")
+(register get-world-to-screen-2d (λ [Vector2 Camera2D] Vector2) "GetWorldToScreen2D")
+(register get-screen-to-world-2d (λ [Vector2 Camera2D] Vector2) "GetScreenToWorld2D")
 (register get-camera-matrix (λ [Camera3D] Matrix) "GetCameraMatrix") ; [Camera] Matrix
-(register get-camera-matrix2-d (λ [Camera2D] Matrix) "GetCameraMatrix2D")
-(register set-target-f-p-s (λ [Int] ()) "SetTargetFPS")
+(register get-camera-matrix-2d (λ [Camera2D] Matrix) "GetCameraMatrix2D")
+(register set-target-fps (λ [Int] ()) "SetTargetFPS")
 (register get-frame-time (λ [] Float) "GetFrameTime")
 (register get-time (λ [] Double) "GetTime")
-(register get-f-p-s (λ [] Int) "GetFPS")
+(register get-fps (λ [] Int) "GetFPS")
 (register swap-screen-buffer (λ [] ()) "SwapScreenBuffer")
 (register poll-input-events (λ [] ()) "PollInputEvents")
 (register wait-time (λ [Double] ()) "WaitTime")
 (register get-random-value (λ [Int Int] Int) "GetRandomValue")
 (register unload-random-sequence (λ [(Ptr Int)] ()) "UnloadRandomSequence")
 (register take-screenshot (λ [(Ptr CChar)] ()) "TakeScreenshot")
-(register open-u-r-l (λ [(Ptr CChar)] ()) "OpenURL")
+(register open-url (λ [(Ptr CChar)] ()) "OpenURL")
 (register set-trace-log-level (λ [Int] ()) "SetTraceLogLevel")
 (register set-trace-log-callback (λ [TraceLogCallback] ()) "SetTraceLogCallback")
 (register mem-free (λ [(Ptr Unit)] ()) "MemFree")
@@ -817,7 +824,7 @@
 (register image-text (λ [(Ptr CChar) Int Color] Image) "ImageText")
 (register image-text-ex (λ [Font (Ptr CChar) Float Float Color] Image) "ImageTextEx")
 (register image-format (λ [(Ptr Image) Int] ()) "ImageFormat")
-(register image-to-p-o-t (λ [(Ptr Image) Color] ()) "ImageToPOT")
+(register image-to-pot (λ [(Ptr Image) Color] ()) "ImageToPOT")
 (register image-crop (λ [(Ptr Image) Rectangle] ()) "ImageCrop")
 (register image-alpha-crop (λ [(Ptr Image) Float] ()) "ImageAlphaCrop")
 (register image-alpha-clear (λ [(Ptr Image) Color Float] ()) "ImageAlphaClear")
@@ -826,15 +833,15 @@
 (register image-blur-gaussian (λ [(Ptr Image) Int] ()) "ImageBlurGaussian")
 (register image-kernel-convolution (λ [(Ptr Image) (Ptr Float) Int] ()) "ImageKernelConvolution")
 (register image-resize (λ [(Ptr Image) Int Int] ()) "ImageResize")
-(register image-resize-n-n (λ [(Ptr Image) Int Int] ()) "ImageResizeNN")
+(register image-resize-nn (λ [(Ptr Image) Int Int] ()) "ImageResizeNN")
 (register image-resize-canvas (λ [(Ptr Image) Int Int Int Int Color] ()) "ImageResizeCanvas")
 (register image-mipmaps (λ [(Ptr Image)] ()) "ImageMipmaps")
 (register image-dither (λ [(Ptr Image) Int Int Int Int] ()) "ImageDither")
 (register image-flip-vertical (λ [(Ptr Image)] ()) "ImageFlipVertical")
 (register image-flip-horizontal (λ [(Ptr Image)] ()) "ImageFlipHorizontal")
 (register image-rotate (λ [(Ptr Image) Int] ()) "ImageRotate")
-(register image-rotate-c-w (λ [(Ptr Image)] ()) "ImageRotateCW")
-(register image-rotate-c-c-w (λ [(Ptr Image)] ()) "ImageRotateCCW")
+(register image-rotate-cw (λ [(Ptr Image)] ()) "ImageRotateCW")
+(register image-rotate-ccw (λ [(Ptr Image)] ()) "ImageRotateCCW")
 (register image-color-tint (λ [(Ptr Image) Color] ()) "ImageColorTint")
 (register image-color-invert (λ [(Ptr Image)] ()) "ImageColorInvert")
 (register image-color-grayscale (λ [(Ptr Image)] ()) "ImageColorGrayscale")
@@ -903,8 +910,8 @@
 (register color-to-int (λ [Color] Int) "ColorToInt")
 (register color-normalize (λ [Color] Vector4) "ColorNormalize")
 (register color-from-normalized (λ [Vector4] Color) "ColorFromNormalized")
-(register color-to-h-s-v (λ [Color] Vector3) "ColorToHSV")
-(register color-from-h-s-v (λ [Float Float Float] Color) "ColorFromHSV")
+(register color-to-hsv (λ [Color] Vector3) "ColorToHSV")
+(register color-from-hsv (λ [Float Float Float] Color) "ColorFromHSV")
 (register color-tint (λ [Color Color] Color) "ColorTint")
 (register color-brightness (λ [Color Float] Color) "ColorBrightness")
 (register color-contrast (λ [Color Float] Color) "ColorContrast")
@@ -923,7 +930,7 @@
 (register unload-font-data (λ [(Ptr GlyphInfo) Int] ()) "UnloadFontData")
 (register unload-font (λ [Font] ()) "UnloadFont")
 (register export-font-as-code (λ [Font (Ptr CChar)] Bool) "ExportFontAsCode")
-(register draw-f-p-s (λ [Int Int] ()) "DrawFPS")
+(register draw-fps (λ [Int Int] ()) "DrawFPS")
 (register draw-text (λ [(Ptr CChar) Int Int Int Color] ()) "DrawText")
 (register draw-text-ex (λ [Font (Ptr CChar) Vector2 Float Float Color] ()) "DrawTextEx")
 (register draw-text-pro (λ [Font (Ptr CChar) Vector2 Vector2 Float Float Float Color] ()) "DrawTextPro")
@@ -936,7 +943,7 @@
 (register get-glyph-index (λ [Font Int] Int) "GetGlyphIndex")
 (register get-glyph-info (λ [Font Int] GlyphInfo) "GetGlyphInfo")
 (register get-glyph-atlas-rec (λ [Font Int] Rectangle) "GetGlyphAtlasRec")
-(register load-u-t-f8 (λ [(Ptr Int) Int] (Ptr CChar)) "LoadUTF8")
+(register load-utf8 (λ [(Ptr Int) Int] (Ptr CChar)) "LoadUTF8")
 (register load-codepoints (λ [(Ptr CChar) (Ptr Int)] (Ptr Int)) "LoadCodepoints")
 (register unload-codepoints (λ [(Ptr Int)] ()) "UnloadCodepoints")
 (register get-codepoint-count (λ [(Ptr CChar)] Int) "GetCodepointCount")
@@ -960,11 +967,11 @@
 (register text-to-camel (λ [(Ptr CChar)] (Ptr CChar)) "TextToCamel")
 (register text-to-integer (λ [(Ptr CChar)] Int) "TextToInteger")
 (register text-to-float (λ [(Ptr CChar)] Float) "TextToFloat")
-(register draw-line3-d (λ [Vector3 Vector3 Color] ()) "DrawLine3D")
-(register draw-point3-d (λ [Vector3 Color] ()) "DrawPoint3D")
-(register draw-circle3-d (λ [Vector3 Float Vector3 Float Color] ()) "DrawCircle3D")
-(register draw-triangle3-d (λ [Vector3 Vector3 Vector3 Color] ()) "DrawTriangle3D")
-(register draw-triangle-strip3-d (λ [(Ptr Vector3) Int Color] ()) "DrawTriangleStrip3D")
+(register draw-line-3d (λ [Vector3 Vector3 Color] ()) "DrawLine3D")
+(register draw-point-3d (λ [Vector3 Color] ()) "DrawPoint3D")
+(register draw-circle-3d (λ [Vector3 Float Vector3 Float Color] ()) "DrawCircle3D")
+(register draw-triangle-3d (λ [Vector3 Vector3 Vector3 Color] ()) "DrawTriangle3D")
+(register draw-triangle-strip-3d (λ [(Ptr Vector3) Int Color] ()) "DrawTriangleStrip3D")
 (register draw-cube (λ [Vector3 Float Float Float Color] ()) "DrawCube")
 (register draw-cube-v (λ [Vector3 Vector3 Color] ()) "DrawCubeV")
 (register draw-cube-wires (λ [Vector3 Float Float Float Color] ()) "DrawCubeWires")
