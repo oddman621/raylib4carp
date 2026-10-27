@@ -1,5 +1,7 @@
 # raylib4carp
- Raylib Binding for personal use
+ Raylib Binding for Carp language  
+  
+It's a personal project, but feel free to use it.
  
 Requires raylib to be installed on the system.
 
