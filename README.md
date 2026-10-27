@@ -1,10 +1,10 @@
 # raylib4carp
  Raylib Binding for personal use
+ 
+Requires raylib to be installed on the system.
 
 **Caution: Functionality of all features is not guaranteed!**
 
-# Requirement
-System 
 
 # Notice
 * Carp version is 0.6.0, Raylib version is 6.2.
