@@ -15,7 +15,7 @@ Requires raylib to be installed on the system.
   - [ ] rlgl.h
   - [ ] raymath.h
 * Tested on Linux x86_64. Other platforms are not tested.
-* Focused on implementation over convenience.
+* Focused on implementation over convenience... for now.
 
 ## Issues
 * No fixed array in Carp: Struct with Fixed-length array is opaque.
@@ -27,6 +27,9 @@ Requires raylib to be installed on the system.
   - `TextureCubemap`: `Texture`
   - `Camera`: `Camera3D`
   - `ModelAnimPose`: `(Ptr Transform)`
+
+## TODOs
+* Exposed functions should be practical, not just "Implementation done.".
 
 # Example
 
@@ -43,4 +46,15 @@ Requires raylib to be installed on the system.
     (end-drawing))
   (close-window)
   0)
+```
+
+```
+;; rcamera modules
+(relative-include "rcamera.h")
+(register CameraYaw (λ [(Ptr Camera3D) Float Bool] ()) "CameraYaw")
+(defn camera-yaw [camera angle rotate-around-target]
+  (CameraYaw (Pointer.address camera) angle rotate-around-target))
+(register CameraPitch (λ [(Ptr Camera3D) Float Bool Bool Bool] ()) "CameraPitch")
+(defn camera-pitch [camera angle lock-view rotate-around-target rotate-up]
+  (CameraPitch (Pointer.address camera) angle lock-view rotate-around-target rotate-up))
 ```
