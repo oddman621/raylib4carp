@@ -1,45 +1,10 @@
 (system-include "raylib.h")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; NOTE: Maybe doesn't need these?
-
-;; (register RAYLIB_H a)
-;; (def RAYLIB_VERSION_MAJOR 6)
-;; (def RAYLIB_VERSION_MINOR 2)
-;; (def RAYLIB_VERSION_PATCH 0)
-;; (def RAYLIB_VERSION "6.2")
-;; (register __declspec (λ [a1] a))
-;; (register RLAPI a)
-;; (register RLAPI a)
-;; (register RLAPI a)
-;; (register RLAPI a)
-;; (def PI 3.14159265358979323846)
-;; (def DEG2RAD (/ PI 180.0))
-;; (def RAD2DEG (/ 180.0 PI))
-;; (register RL_MALLOC (λ [a1] a))
-;; (register RL_CALLOC (λ [a2 a1] a))
-;; (register RL_REALLOC (λ [a2 a1] a))
-;; (register RL_FREE (λ [a1] a))
-;; (register CLITERAL (λ [a1] a))
-;; (register CLITERAL (λ [a1] a))
-;; (register RL_COLOR_TYPE a)
-;; (register RL_RECTANGLE_TYPE a)
-;; (register RL_VECTOR2_TYPE a)
-;; (register RL_VECTOR3_TYPE a)
-;; (register RL_VECTOR4_TYPE a)
-;; (register RL_QUATERNION_TYPE a)
-;; (register RL_MATRIX_TYPE a)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (register raylib-version-major Int "RAYLIB_VERSION_MAJOR")
 (register raylib-version-minor Int "RAYLIB_VERSION_MINOR")
 (register raylib-version-patch Int "RAYLIB_VERSION_PATCH")
 (register raylib-version (Ptr Char) "RAYLIB_VERSION")
-;; (def pi PI)
-;; (def deg2rad DEG2RAD)
-;; (def rad2deg RAD2DEG)
+
 (register raylib-pi Float "PI") ; Duplication with Carp's `pi`: renaming this to `raylib-pi`
 (register deg2rad Float "DEG2RAD")
 (register rad2deg Float "RAD2DEG")
@@ -110,32 +75,6 @@
 (register-type AutomationEvent "AutomationEvent")
 (register-type AutomationEventList [capacity Uint32, count Uint32, events (Ptr AutomationEvent)])
 
-;; (def LIGHTGRAY (Color.init 200b 200b 200b 255b))
-;; (def GRAY (Color.init 130b 130b 130b 255b))
-;; (def DARKGRAY (Color.init 80b 80b 80b 255b))
-;; (def YELLOW (Color.init 253b 249b 0b 255b))
-;; (def GOLD (Color.init 255b 203b 0b 255b))
-;; (def ORANGE (Color.init 255b 161b 0b 255b))
-;; (def PINK (Color.init 255b 109b 194b 255b))
-;; (def RED (Color.init 230b 41b 55b 255b))
-;; (def MAROON (Color.init 190b 33b 55b 255b))
-;; (def GREEN (Color.init 0b 228b 48b 255b))
-;; (def LIME (Color.init 0b 158b 47b 255b))
-;; (def DARKGREEN (Color.init 0b 117b 44b 255b))
-;; (def SKYBLUE (Color.init 102b 191b 255b 255b))
-;; (def BLUE (Color.init 0b 121b 241b 255b))
-;; (def DARKBLUE (Color.init 0b 82b 172b 255b))
-;; (def PURPLE (Color.init 200b 122b 255b 255b))
-;; (def VIOLET (Color.init 135b 60b 190b 255b))
-;; (def DARKPURPLE (Color.init 112b 31b 126b 255b))
-;; (def BEIGE (Color.init 211b 176b 131b 255b))
-;; (def BROWN (Color.init 127b 106b 79b 255b))
-;; (def DARKBROWN (Color.init 76b 63b 47b 255b))
-;; (def WHITE (Color.init 255b 255b 255b 255b))
-;; (def BLACK (Color.init 0b 0b 0b 255b))
-;; (def BLANK (Color.init 0b 0b 0b 0b))
-;; (def MAGENTA (Color.init 255b 0b 255b 255b))
-;; (def RAYWHITE (Color.init 245b 245b 245b 255b))
 (defmodule Color
   (register lightgray Color "LIGHTGRAY")
   (register gray Color "GRAY")
@@ -164,7 +103,6 @@
   (register magenta Color "MAGENTA")
   (register raywhite Color "RAYWHITE"))
 
-;;(register-type ConfigFlags)
 (defmodule ConfigFlags
   (register flag-vsync-hint Int "FLAG_VSYNC_HINT")
   (register flag-fullscreen-mode Int "FLAG_FULLSCREEN_MODE")
@@ -183,7 +121,6 @@
   (register flag-msaa-4x-hint Int "FLAG_MSAA_4X_HINT")
   (register flag-interlaced-hint Int "FLAG_INTERLACED_HINT"))
 
-;;(register-type TraceLogLevel)
 (defmodule TraceLogLevel
   (register log-all Int "LOG_ALL")
   (register log-trace Int "LOG_TRACE")
@@ -194,7 +131,6 @@
   (register log-fatal Int "LOG_FATAL")
   (register log-none Int "LOG_NONE"))
 
-;;(register-type KeyboardKey)
 (defmodule KeyboardKey
   (register key-null Int "KEY_NULL")
   (register key-apostrophe Int "KEY_APOSTROPHE")
@@ -307,17 +243,7 @@
   (register key-volume-up Int "KEY_VOLUME_UP")
   (register key-volume-down Int "KEY_VOLUME_DOWN"))
 
-;; NOTE: Doesn't need these?
-;; (register RL_BOOL_TYPE a)
-;; (register MOUSE_LEFT_BUTTON a)
-;; (register MOUSE_RIGHT_BUTTON a)
-;; (register MOUSE_MIDDLE_BUTTON a)
-;; (register MATERIAL_MAP_DIFFUSE a)
-;; (register MATERIAL_MAP_SPECULAR a)
-;; (register SHADER_LOC_MAP_DIFFUSE a)
-;; (register SHADER_LOC_MAP_SPECULAR a)
 
-;;(register-type MouseButton)
 (defmodule MouseButton
   (register mouse-button-left Int "MOUSE_BUTTON_LEFT")
   (register mouse-button-right Int "MOUSE_BUTTON_RIGHT")
@@ -328,7 +254,6 @@
   (register mouse-button-back Int "MOUSE_BUTTON_BACK"))
 ;; NOTE: No backward compatibility for MouseButton, seems unnecessary.
 
-;;(register-type MouseCursor)
 (defmodule MouseCursor
   (register mouse-cursor-unknown Int "MOUSE_CURSOR_UNKNOWN")
   (register mouse-cursor-arrow Int "MOUSE_CURSOR_ARROW")
@@ -342,7 +267,6 @@
   (register mouse-cursor-all Int "MOUSE_CURSOR_ALL")
   (register mouse-cursor-not-allowed Int "MOUSE_CURSOR_NOT_ALLOWED"))
 
-;;(register-type GamepadButton)
 (defmodule GamepadButton
   (register gamepad-button-unknown Int "GAMEPAD_BUTTON_UNKNOWN")
   (register gamepad-button-left-face-up Int "GAMEPAD_BUTTON_LEFT_FACE_UP")
@@ -363,7 +287,6 @@
   (register gamepad-button-left-thumb Int "GAMEPAD_BUTTON_LEFT_THUMB")
   (register gamepad-button-right-thumb Int "GAMEPAD_BUTTON_RIGHT_THUMB"))
 
-;;(register-type GamepadAxis)
 (defmodule GamepadAxis
   (register gamepad-axis-left-x Int "GAMEPAD_AXIS_LEFT_X")
   (register gamepad-axis-left-y Int "GAMEPAD_AXIS_LEFT_Y")
@@ -372,7 +295,6 @@
   (register gamepad-axis-left-trigger Int "GAMEPAD_AXIS_LEFT_TRIGGER")
   (register gamepad-axis-right-trigger Int "GAMEPAD_AXIS_RIGHT_TRIGGER"))
 
-;;(register-type MaterialMapIndex)
 (defmodule MaterialMapIndex
   (register material-map-albedo Int "MATERIAL_MAP_ALBEDO")
   (register material-map-metalness Int "MATERIAL_MAP_METALNESS")
@@ -389,7 +311,6 @@
   (def material-map-diffuse material-map-albedo)
   (def material-map-specular material-map-metalness))
 
-;;(register-type ShaderLocationIndex)
 (defmodule ShaderLocationIndex
   (register shader-loc-vertex-position Int "SHADER_LOC_VERTEX_POSITION")
   (register shader-loc-vertex-texcoord01 Int "SHADER_LOC_VERTEX_TEXCOORD01")
@@ -425,7 +346,6 @@
   (def shader-loc-map-diffuse shader-loc-map-albedo)
   (def shader-loc-map-specular shader-loc-map-metalness))
 
-;;(register-type ShaderUniformDataType)
 (defmodule ShaderUniformDataType
   (register shader-uniform-float Int "SHADER_UNIFORM_FLOAT")
   (register shader-uniform-vec2 Int "SHADER_UNIFORM_VEC2")
@@ -441,14 +361,12 @@
   (register shader-uniform-uivec4 Int "SHADER_UNIFORM_UIVEC4")
   (register shader-uniform-sampler2d Int "SHADER_UNIFORM_SAMPLER2D"))
 
-;;(register-type ShaderAttributeDataType)
 (defmodule ShaderAttributeDataType
   (register shader-attrib-float Int "SHADER_ATTRIB_FLOAT")
   (register shader-attrib-vec2 Int "SHADER_ATTRIB_VEC2")
   (register shader-attrib-vec3 Int "SHADER_ATTRIB_VEC3")
   (register shader-attrib-vec4 Int "SHADER_ATTRIB_VEC4"))
 
-;;(register-type PixelFormat)
 (defmodule PixelFormat
   (register pixelformat-uncompressed-grayscale Int "PIXELFORMAT_UNCOMPRESSED_GRAYSCALE")
   (register pixelformat-uncompressed-gray-alpha Int "PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA")
@@ -475,7 +393,6 @@
   (register pixelformat-compressed-astc-4x4-rgba Int "PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA")
   (register pixelformat-compressed-astc-8x8-rgba Int "PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA"))
 
-;;(register-type TextureFilter)
 (defmodule TextureFilter
   (register texture-filter-point Int "TEXTURE_FILTER_POINT")
   (register texture-filter-bilinear Int "TEXTURE_FILTER_BILINEAR")
@@ -484,14 +401,12 @@
   (register texture-filter-anisotropic-8x Int "TEXTURE_FILTER_ANISOTROPIC_8X")
   (register texture-filter-anisotropic-16x Int "TEXTURE_FILTER_ANISOTROPIC_16X"))
 
-;;(register-type TextureWrap)
 (defmodule TextureWrap
   (register texture-wrap-repeat Int "TEXTURE_WRAP_REPEAT")
   (register texture-wrap-clamp Int "TEXTURE_WRAP_CLAMP")
   (register texture-wrap-mirror-repeat Int "TEXTURE_WRAP_MIRROR_REPEAT")
   (register texture-wrap-mirror-clamp Int "TEXTURE_WRAP_MIRROR_CLAMP"))
 
-;;(register-type CubemapLayout)
 (defmodule CubemapLayout
   (register cubemap-layout-auto-detect Int "CUBEMAP_LAYOUT_AUTO_DETECT")
   (register cubemap-layout-line-vertical Int "CUBEMAP_LAYOUT_LINE_VERTICAL")
@@ -499,13 +414,11 @@
   (register cubemap-layout-cross-three-by-four Int "CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR")
   (register cubemap-layout-cross-four-by-three Int "CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE"))
 
-;;(register-type FontType)
 (defmodule FontType
   (register font-default Int "FONT_DEFAULT")
   (register font-bitmap Int "FONT_BITMAP")
   (register font-sdf Int "FONT_SDF"))
 
-;;(register-type BlendMode)
 (defmodule BlendMode
   (register blend-alpha Int "BLEND_ALPHA")
   (register blend-additive Int "BLEND_ADDITIVE")
@@ -516,7 +429,6 @@
   (register blend-custom Int "BLEND_CUSTOM")
   (register blend-custom-separate Int "BLEND_CUSTOM_SEPARATE"))
 
-;; (register-type Gesture)
 (defmodule Gesture
   (register gesture-none Int "GESTURE_NONE")
   (register gesture-tap Int "GESTURE_TAP")
@@ -530,7 +442,6 @@
   (register gesture-pinch-in Int "GESTURE_PINCH_IN")
   (register gesture-pinch-out Int "GESTURE_PINCH_OUT"))
 
-;; (register-type CameraMode)
 (defmodule CameraMode
   (register camera-custom Int "CAMERA_CUSTOM")
   (register camera-free Int "CAMERA_FREE")
@@ -538,12 +449,10 @@
   (register camera-first-person Int "CAMERA_FIRST_PERSON")
   (register camera-third-person Int "CAMERA_THIRD_PERSON"))
 
-;; (register-type CameraProjection)
 (defmodule CameraProjection
   (register camera-perspective Int "CAMERA_PERSPECTIVE")
   (register camera-orthographic Int "CAMERA_ORTHOGRAPHIC"))
 
-;; (register-type NPatchLayout)
 (defmodule NPatchLayout
   (register npatch-nine-patch Int "NPATCH_NINE_PATCH")
   (register npatch-three-patch-vertical Int "NPATCH_THREE_PATCH_VERTICAL")
@@ -740,8 +649,10 @@
 (register get-gesture-drag-angle (λ [] Float) "GetGestureDragAngle")
 (register get-gesture-pinch-vector (λ [] Vector2) "GetGesturePinchVector")
 (register get-gesture-pinch-angle (λ [] Float) "GetGesturePinchAngle")
-(register update-camera (λ [(Ptr Camera3D) Int] ()) "UpdateCamera") ; [(Ptr Camera) Int]
-(register update-camera-pro (λ [(Ptr Camera3D) Vector3 Vector3 Float] ()) "UpdateCameraPro") ; [(Ptr Camera) Vector3 Vector3 Float]
+(register UpdateCamera (λ [(Ptr Camera3D) Int] ()) "UpdateCamera") ; [(Ptr Camera) Int]
+(defn update-camera [camera mode] (UpdateCamera (Pointer.address camera) mode))
+(register UpdateCameraPro (λ [(Ptr Camera3D) Vector3 Vector3 Float] ()) "UpdateCameraPro") ; [(Ptr Camera) Vector3 Vector3 Float]
+(defn update-camera-pro [camera movement rotation zoom] (UpdateCameraPro (Pointer.address camera) movement rotation zoom))
 (register set-shapes-texture (λ [Texture Rectangle] ()) "SetShapesTexture") ; [Texture2D Rectangle]
 (register get-shapes-texture (λ [] Texture) "GetShapesTexture") ; [] Texture2D
 (register get-shapes-texture-rectangle (λ [] Rectangle) "GetShapesTextureRectangle")
