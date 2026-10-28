@@ -859,14 +859,24 @@
 (register unload-font (λ [Font] ()) "UnloadFont")
 (register export-font-as-code (λ [Font (Ptr CChar)] Bool) "ExportFontAsCode")
 (register draw-fps (λ [Int Int] ()) "DrawFPS")
-(register draw-text (λ [(Ptr CChar) Int Int Int Color] ()) "DrawText")
-(register draw-text-ex (λ [Font (Ptr CChar) Vector2 Float Float Color] ()) "DrawTextEx")
-(register draw-text-pro (λ [Font (Ptr CChar) Vector2 Vector2 Float Float Float Color] ()) "DrawTextPro")
+(register DrawText (λ [(Ptr CChar) Int Int Int Color] ()) "DrawText")
+(defn draw-text [text pos-x pos-y font-size color]
+  (DrawText (cstr text) pos-x pos-y font-size color))
+(register DrawTextEx (λ [Font (Ptr CChar) Vector2 Float Float Color] ()) "DrawTextEx")
+(defn draw-text-ex [font text position font-size spacing tint]
+  (DrawTextEx font (cstr text) position font-size spacing tint))
+(register DrawTextPro (λ [Font (Ptr CChar) Vector2 Vector2 Float Float Float Color] ()) "DrawTextPro")
+(defn draw-text-pro [font text position origin rotation font-size spacing tint]
+  (DrawTextPro font (cstr text) position origin rotation font-size spacing tint))
 (register draw-text-codepoint (λ [Font Int Vector2 Float Color] ()) "DrawTextCodepoint")
 (register draw-text-codepoints (λ [Font (Ptr Int) Int Vector2 Float Float Color] ()) "DrawTextCodepoints")
 (register set-text-line-spacing (λ [Int] ()) "SetTextLineSpacing")
-(register measure-text (λ [(Ptr CChar) Int] Int) "MeasureText")
-(register measure-text-ex (λ [Font (Ptr CChar) Float Float] Vector2) "MeasureTextEx")
+(register MeasureText (λ [(Ptr CChar) Int] Int) "MeasureText")
+(defn measure-text [text font-size]
+  (MeasureText (cstr text) font-size))
+(register MeasureTextEx (λ [Font (Ptr CChar) Float Float] Vector2) "MeasureTextEx")
+(defn measure-text-ex [font text font-size spacing]
+  (MeasureTextEx font (cstr text) font-size spacing))
 (register measure-text-codepoints (λ [Font (Ptr Int) Int Float Float] Vector2) "MeasureTextCodepoints")
 (register get-glyph-index (λ [Font Int] Int) "GetGlyphIndex")
 (register get-glyph-info (λ [Font Int] GlyphInfo) "GetGlyphInfo")
