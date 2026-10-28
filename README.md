@@ -22,11 +22,13 @@ Requires raylib to be installed on the system.
 * `prn` warning: I don't know how to fix it.
 * `CChar`: I don't know what is this.
 * No type alias support in Carp. `(typedef A (Ptr B))` doesn't work, for example. Following type is not available now. Use the right side instead, if you have a problem:
-  - `Quaternion`: `Vector4`
-  - `Texture2D`: `Texture`
-  - `TextureCubemap`: `Texture`
-  - `Camera`: `Camera3D`
-  - `ModelAnimPose`: `(Ptr Transform)`
+  - `Quaternion` is `Vector4`
+  - `Texture2D` is `Texture`
+  - `TextureCubemap` is `Texture`
+  - `Camera` is `Camera3D`
+  - `ModelAnimPose` is `(Ptr Transform)`
+* Variadic Arguments are not supported in Carp. Following functions are not implemented:
+  - `TextFormat(const char*, ...)`
 
 ## TODOs
 * Exposed functions should be practical, not just "Implementation done.".
