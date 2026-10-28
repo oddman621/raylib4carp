@@ -33,6 +33,15 @@
 (register-type Rectangle [x Float, y Float, width Float, height Float])
 (register-type Image [data (Ptr ()), width Int32, height Int32, mipmaps Int32, format Int32])
 (register-type Texture [id Uint32, width Int32, height Int32, mipmaps Int32, format Int32])
+(defmodule Texture
+  (defn copy [t]
+    (Texture.init
+      @(Texture.id t)
+      @(Texture.width t)
+      @(Texture.height t)
+      @(Texture.mipmaps t)
+      @(Texture.format t)))
+  (implements copy copy))
 ;; (deftype Texture2D Texture) ; TODO: define Texture2D = Texture
 ;; (deftype TextureCubemap Texture) ; TODO: define TextureCubemap = Texture
 (register-type RenderTexture [id Uint32, texture Texture, depth Texture])
@@ -466,7 +475,9 @@
 (register-type SaveFileTextCallback)
 (register-type AudioCallback)
 
-(register init-window (λ [Int Int (Ptr CChar)] ()) "InitWindow")
+(register InitWindow (λ [Int Int (Ptr CChar)] ()) "InitWindow")
+(defn init-window [width height title]
+  (InitWindow width height (cstr title)))
 (register close-window (λ [] ()) "CloseWindow")
 (register window-should-close (λ [] Bool) "WindowShouldClose")
 (register is-window-ready (λ [] Bool) "IsWindowReady")
